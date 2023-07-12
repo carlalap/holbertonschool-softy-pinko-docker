@@ -607,6 +607,27 @@ task4-front-end-1  | 2023/06/12 19:27:43 [notice] 1#1: start worker process 35
 
 <p>Note that you are using the same service name that you used in your <code>docker-compose.yml</code> file for the front and back ends. This is because Docker has an internal DNS that will setup routes to internal IP addresses for those names. This is a bit of “magic” that Docker does, but it makes it super convenient to not have to know the exact IP addresses of these services.</p>
 
+<p>Another thing that needs to be modified is the JavaScript that is used. It was previously calling the back-end server directly; instead, we want to have the JavaScript make an API call through the proxy server as well. Replace your JavaScript at the bottom of the <code>index.html</code> file with the following:</p>
+
+
+<p><strong>JavaScript At Bottom Of index.html</strong></p>
+
+<pre><code>&lt;script&gt;
+    // Load dynamic data from the back-end on port 5252
+    $(function() {
+        $.ajax({
+            type: &quot;GET&quot;,
+            url: &quot;/api/hello&quot;,
+            success: function (data) {
+                console.log(data);
+                $(&#39;#dynamic-content&#39;).text(data);
+            }
+        });
+    });
+&lt;/script&gt;
+</code></pre>
+
+
 <p>Next, we need to update the <code>docker-compose.yml</code> file to add a new service named <code>proxy</code>. Be sure to include the same sections as previously used:
 * build, context, dockerfile
 * image
